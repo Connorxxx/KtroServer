@@ -3,21 +3,14 @@ package com.connor.ktorserver
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.lifecycleScope
+import android.util.Log
 import com.connor.ktorserver.databinding.ActivityMainBinding
 import com.connor.ktorserver.models.Customer
 import com.connor.ktorserver.models.customerStorage
-import com.connor.ktorserver.plugins.configureRouting
-import com.connor.ktorserver.plugins.configureSerialization
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okio.buffer
-import okio.sink
-import okio.source
 import java.io.File
 import java.net.NetworkInterface
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,6 +25,8 @@ class MainActivity : AppCompatActivity() {
         startService(intent)
         val localIpAddress = getIpAddressInLocalNetwork() ?: "ip null"
         binding.tvIp.text = "$localIpAddress:16610"
+        val logDri = File("${this.filesDir}/log")
+        if (!logDri.exists()) logDri.mkdir()
     }
 
     private fun getData(): List<Customer> {

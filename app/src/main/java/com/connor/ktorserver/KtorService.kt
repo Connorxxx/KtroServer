@@ -18,8 +18,21 @@ import java.io.File
 
 class KtorService : Service() {
 
-    val job = Job()
+    private val job = Job()
     private val ioScope = CoroutineScope(Dispatchers.IO + job)
+
+    private val configServer by lazy {
+        embeddedServer(Netty, port = 16610, host = "0.0.0.0", configure = {
+            connectionGroupSize = 2
+            workerGroupSize = 5
+            callGroupSize = 10
+
+        }) {
+
+            configureRouting(assetsFile())
+            configureSerialization()
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -41,7 +54,7 @@ class KtorService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         ioScope.launch {
-            configServer()
+            configServer.start(wait = true)
         }
         return super.onStartCommand(intent, flags, startId)
     }
@@ -51,19 +64,9 @@ class KtorService : Service() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        configServer.stop(1_000, 2_000)
         job.cancel()
-    }
-
-    private fun configServer() {
-        embeddedServer(Netty, port = 16610, host = "0.0.0.0", configure = {
-            connectionGroupSize = 2
-            workerGroupSize = 5
-            callGroupSize = 10
-        }) {
-            configureRouting(assetsFile())
-            configureSerialization()
-        }.start(wait = true)
+        super.onDestroy()
     }
 
     private fun assetsFile(): File {
