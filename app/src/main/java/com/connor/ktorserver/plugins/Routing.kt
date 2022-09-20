@@ -1,22 +1,30 @@
 package com.connor.ktorserver.plugins
 
-import com.connor.ktorserver.routes.customerRouting
-import com.connor.ktorserver.routes.listOrdersRoute
+import com.connor.ktorserver.routes.*
 import com.connor.ktorserver.utils.SaveLogs
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
+import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.request.*
+import io.ktor.server.plugins.partialcontent.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
 import org.slf4j.event.Level
 import java.io.File
+import java.time.Duration
 
 fun Application.configureRouting(file: File) {
     install(Compression)
+    install(WebSockets) {
+        pingPeriod = Duration.ofSeconds(15)
+        timeout = Duration.ofSeconds(15)
+        maxFrameSize = Long.MAX_VALUE
+        masking = false
+    }
     install(CallLogging) {
         level = Level.INFO
         val log = StringBuilder()
@@ -56,9 +64,14 @@ fun Application.configureRouting(file: File) {
             log.toString()
         }
     }
+    install(PartialContent)
+    install(AutoHeadResponse)
     routing {
         customerRouting()
         listOrdersRoute()
+        uploadFile()
+        downloadFile()
+        webSocket()
         get("/") {
             call.respond("Congratulation... you access ktor server")
         }
