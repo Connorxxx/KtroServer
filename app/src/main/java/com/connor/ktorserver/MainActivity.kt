@@ -1,16 +1,13 @@
 package com.connor.ktorserver
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.connor.ktorserver.databinding.ActivityMainBinding
 import com.connor.ktorserver.models.Customer
 import com.connor.ktorserver.models.customerStorage
 import java.io.File
 import java.net.NetworkInterface
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +24,10 @@ class MainActivity : AppCompatActivity() {
         binding.tvIp.text = "$localIpAddress:16610"
         val logDri = File("${this.filesDir}/log")
         if (!logDri.exists()) logDri.mkdir()
+        binding.btnStop.setOnClickListener {
+            val stopService = Intent(this, KtorService::class.java)
+            stopService(stopService)
+        }
     }
 
     private fun getData(): List<Customer> {

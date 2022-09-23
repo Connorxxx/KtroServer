@@ -1,13 +1,9 @@
 package com.connor.ktorserver.plugins
 
-import android.util.Log
 import com.connor.ktorserver.models.Customer
 import com.connor.ktorserver.utils.SaveLogs
 import io.ktor.server.application.*
-import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 
 val DataTransformationPlugin = createApplicationPlugin(name = "DataTransformationPlugin") {
 

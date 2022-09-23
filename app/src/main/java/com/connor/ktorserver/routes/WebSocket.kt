@@ -11,7 +11,6 @@ import okio.sink
 import okio.source
 import java.io.File
 import java.util.*
-import kotlin.collections.LinkedHashSet
 
 fun Route.webSocket() {
     route("/chat") {
@@ -21,7 +20,7 @@ fun Route.webSocket() {
             val thisConnection = Connection(this)
             connections += thisConnection
             try {
-                send("You are connected! There are ${connections.count()} users here.")
+                send("  There are ${connections.count()} users here.")
                 for (frame in incoming) {
                     frame as? Frame.Text ?: continue
                     val receivedText = frame.readText()

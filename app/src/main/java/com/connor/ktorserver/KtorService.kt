@@ -1,6 +1,9 @@
 package com.connor.ktorserver
 
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -38,8 +41,10 @@ class KtorService : Service() {
         super.onCreate()
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("ktor_server", "Ktor Service",
-            NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(
+                "ktor_server", "Ktor Service",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
             manager.createNotificationChannel(channel)
         }
         val intent = Intent(this, MainActivity::class.java)
@@ -64,8 +69,11 @@ class KtorService : Service() {
     }
 
     override fun onDestroy() {
-        configServer.stop(1_000, 2_000)
-        job.cancel()
+        ioScope.launch {
+            configServer.stop(1_000, 2_000)
+            job.cancelAndJoin()
+        }
+        stopForeground(true)
         super.onDestroy()
     }
 
