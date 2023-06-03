@@ -32,7 +32,7 @@ fun Application.configureRouting(file: File) {
         format { call ->
             call.request.apply {
                 with(origin) {
-                    log.appendLine("-->> [${method.value}] ${scheme}://${host}:${port}${uri}")
+                    log.appendLine("-->> [${method.value}] ${scheme}://${localHost}:${localPort}${uri}")
                 }
                 log.appendLine("-- Headers --")
                 headers.forEach { key, value ->
@@ -50,7 +50,7 @@ fun Application.configureRouting(file: File) {
             call.response.apply {
                 log.appendLine("Status: ${status()}")
                 with(call.request.origin) {
-                    log.appendLine("<<-- [${call.response.status()?.value}] ${scheme}://${host}:${port}${uri}")
+                    log.appendLine("<<-- [${call.response.status()?.value}] ${scheme}://${serverHost}:${serverPort}${uri}")
                 }
                 log.appendLine("-- Headers --")
                 headers.allValues().forEach { key, value ->
