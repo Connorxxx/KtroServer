@@ -11,7 +11,6 @@ fun Route.downloadFile() {
         get("{path...}") {
             val path = call.parameters.getAll("path")?.joinToString("/")
             path?.let {
-                val file = File(path)
                 call.response.header(
                     HttpHeaders.ContentDisposition,
                     ContentDisposition.Attachment.withParameter(
@@ -19,7 +18,7 @@ fun Route.downloadFile() {
                         path
                     ).toString()
                 )
-                call.respondFile(file)
+                call.respondFile(File(path))
             } ?: call.respondText("Missing path", status = HttpStatusCode.NotFound)
         }
     }

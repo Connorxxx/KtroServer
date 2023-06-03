@@ -6,6 +6,9 @@ import com.connor.ktorserver.utils.Connection
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.receiveAsFlow
 import okio.buffer
 import okio.sink
 import okio.source
@@ -21,6 +24,12 @@ fun Route.webSocket() {
             connections += thisConnection
             try {
                 send("  There are ${connections.count()} users here.")
+//                incoming.receiveAsFlow().filterIsInstance<Frame.Text>().collect {
+//                    val textWithUsername = "[${thisConnection.name}]: ${it.readText()}"
+//                    connections.forEach {
+//                        it.session.send(textWithUsername)
+//                    }
+//                }
                 for (frame in incoming) {
                     frame as? Frame.Text ?: continue
                     val receivedText = frame.readText()
@@ -38,6 +47,12 @@ fun Route.webSocket() {
         webSocket("/send") {
             val file = File("${App.context.filesDir}/wsFile")
             kotlin.runCatching {
+//                incoming.receiveAsFlow().filterIsInstance<Frame.Binary>().collect {
+//                    val rec = it.data.inputStream()
+//                    file.outputStream().use {
+//                        rec.copyTo(it)
+//                    }
+//                }
                 for (frame in incoming) {
                     frame as? Frame.Binary ?: continue
                     val received = frame.data.inputStream()

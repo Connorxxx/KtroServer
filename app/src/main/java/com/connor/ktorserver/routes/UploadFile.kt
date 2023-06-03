@@ -50,6 +50,7 @@ fun Route.uploadFile() {
                     }
                     else -> {}
                 }
+                part.dispose
             }
             call.respondText("$fileDescription is uploaded to '${App.context.filesDir}/$fileName' $contentLength")
         }
